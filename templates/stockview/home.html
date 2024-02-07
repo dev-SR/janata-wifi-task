@@ -12,7 +12,7 @@
                 <th>Close</th>
                 <th>Volume</th>
             </tr>
-            {% for entry in data %}
+            {% for entry in page_obj %}
                 <tr>
                     <td>{{ entry.date }}</td>
                     <td>{{ entry.trade_code }}</td>
@@ -24,5 +24,6 @@
                 </tr>
             {% endfor %}
         </table>
+        {% include 'pagination/ssr_pagination.html' %}
     </main>
 {% endblock content %}
