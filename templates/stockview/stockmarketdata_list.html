@@ -15,8 +15,13 @@
                         <input type="submit"
                                value="Filter"
                                class="py-2 px-8 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white text-sm flex items-center justify-center space-x-2">
+                        <a class="py-2 px-8 bg-gray-600 hover:bg-gray-700 rounded-md text-white text-sm flex items-center justify-center space-x-2"
+                           href=" {% url 'index' %}">
+                            <span>Clear</span>
+                        </a>
                     </form>
                 </div>
+                <div id="chart">{{ chart_html|safe }}</div>
                 <div class="flex items-center justify-between w-full">
                     <h2 class="text-xl font-bold dark:text-white">Stocks</h2>
                     <div class="flex space-x-2">
