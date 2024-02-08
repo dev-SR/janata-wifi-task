@@ -21,7 +21,7 @@ def run():
     samples = random.sample(data, 1000)
 
     # Seed the selected samples
-    for item in samples:
+    for item in data:
         StockMarketData.objects.create(
             date=item['date'],
             trade_code=item['trade_code'],
