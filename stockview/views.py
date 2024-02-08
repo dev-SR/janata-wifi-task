@@ -1,18 +1,11 @@
+import plotly.graph_objs as go
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import DateInput
-from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from typing import Any
-from .models import StockMarketData
 from django.views.generic import ListView
-from django.shortcuts import render
-from django.core.paginator import Paginator
-import plotly.express as px
-import plotly.graph_objs as go
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-
-import plotly.graph_objs as go
-from django.views.generic import ListView
 from .models import StockMarketData
 
 
@@ -82,7 +75,8 @@ class StockMarketDataListView(ListView):
         return context
 
 
-class StockMarketDataCreateView(CreateView):
+class StockMarketDataCreateView(LoginRequiredMixin, CreateView):
+    login_url = '/users/login/'
     model = StockMarketData
     fields = ['date', 'trade_code', 'high', 'low', 'open', 'close', 'volume']
     success_url = reverse_lazy('index')
@@ -98,11 +92,12 @@ class StockMarketDataDetailView(DetailView):
     context_object_name = 'stock_data'  # Optionally specify the context object name
 
 
-class StockMarketDataUpdateView(UpdateView):
+class StockMarketDataUpdateView(LoginRequiredMixin, UpdateView):
     model = StockMarketData
     fields = ['date', 'trade_code', 'high', 'low', 'open', 'close', 'volume']
     success_url = reverse_lazy('index')
     template_name_suffix = '_update_form'
+    login_url = '/users/login/'
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -110,6 +105,7 @@ class StockMarketDataUpdateView(UpdateView):
         return form
 
 
-class StockMarketDataDeleteView(DeleteView):
+class StockMarketDataDeleteView(LoginRequiredMixin, DeleteView):
     model = StockMarketData
     success_url = reverse_lazy('index')
+    login_url = '/users/login/'
