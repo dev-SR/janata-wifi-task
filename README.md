@@ -1,190 +1,34 @@
-# Django + TailwindCSS + HTMX
+# Stock Market Data Web Application
+
+- [Stock Market Data Web Application](#stock-market-data-web-application)
+	- [Overview](#overview)
+	- [Implemented Functionalities](#implemented-functionalities)
+	- [Additional Functionalities Implemented](#additional-functionalities-implemented)
+	- [Repository Structure](#repository-structure)
 
 
-## Setup
+## Overview
 
-- [https://www.geeksforgeeks.org/how-to-use-tailwind-css-with-django/](https://www.geeksforgeeks.org/how-to-use-tailwind-css-with-django/)
-- [https://testdriven.io/blog/django-htmx-tailwind/](https://testdriven.io/blog/django-htmx-tailwind/)
-- [https://flowbite.com/docs/getting-started/django/](https://flowbite.com/docs/getting-started/django/)
+This web application is built using Python and Django framework to visualize stock market data. It provides functionalities to view, edit, create, and delete stock market data records. Additionally, it includes interactive chart visualizations for better analysis.
 
-```bash
-pnpm init
-pnpm install -D tailwindcss
-npx tailwindcss init
-mkdir .venv
-pipenv install django django-compressor django-browser-reload django-extensions ipython bpython
-pipenv shell
-# using venv...
-# python -m venv .venv
-# .\.venv\Scripts\activate
-```
+## Implemented Functionalities
 
-```bash
-django-admin startproject core .
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
-```
+1. **Table Visualization:** Displays stock market data in a tabular format on the home page.
+2. **Editable Rows/CRUD Functionality:** Allows users to perform CRUD (Create, Read, Update, Delete) operations on stock market data records. Among them create, update, and delete operations are protected by user authentication.
+3. **Multi-axis Chart:** Accommodates both line and bar chart visualizations together with the 'close' column represented in the line chart and the 'volume' column in the bar chart.
+4. **Dropdown Selection:** Includes a dropdown menu in the chart to choose the 'trade_code' column, which updates the data in the line chart.
 
-### Tailwindcss
+## Additional Functionalities Implemented
 
-Requirements:`Django Compressor`
+- **Additional Visualization:** Incorporates a **candlestick chart** for stock market data visualization, offering additional insights into the market trends.
+- **Dark Mode Support:** Includes support for dark mode, allowing users to switch between light and dark themes for better viewing experience.
+- **User Authentication:** Implements user authentication using Django's built-in authentication system to secure CRUD operations and access control.
+- **Pagination:** Implements pagination for better navigation and performance, ensuring smooth user experience even with large datasets.
+- **Session Management:** Uses session management to store user preferences, such as dark mode setting, across different pages.
 
-Django Compressor is an extension designed for managing (compressing/caching) static assets in a Django application. With it, you create a simple asset pipeline for:
+## Repository Structure
 
-- Combining and minifying multiple CSS and JavaScript files down to a single file for each
-- Creating asset bundles for use in your templates
+The project repository is organized into the following directories:
 
-
-1. Add `compressor` to the installed apps inside the `settings.py` file:
-
-
-```python
-# config/settings.py
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'compressor',  # new
-]
-```
-
-2. Configure the `compressor` inside the `settings.py` file:
-
-
-```python
-# default / The list of finder backends that know how to find static files in various locations.
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-]
-
-# django-compressor
-COMPRESS_ROOT = BASE_DIR / "static"
-COMPRESS_ENABLED = True
-STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
-
-```
-
-3. Enable root-level templates :create a new `templates/` directory inside the project folder and update `settings.py` folder:
-
-```python
-# config/settings.py
-TEMPLATES = [
-    {
-        ...
-        'DIRS': [BASE_DIR / 'templates'], # new
-        ...
-    },
-]
-```
-
-4. Create two new folders and an `input.css` file inside the `static/src/` folder:
-
-```css
-/* static/src/input.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-
-5. Update `tailwind.config.js` like so:
-
-
-```typescript
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-	content: [
-		// Templates within theme app (e.g. base.html)
-		'./templates/**/*.html',
-		// Templates in other apps
-		'./../templates/**/*.html'
-		// // Include JavaScript files that might contain Tailwind CSS classes
-		// '../../**/*.js',
-		// // Include Python files that might contain Tailwind CSS classes
-		// '../../**/*.py'
-	],
-	theme: {
-		extend: {}
-	},
-	plugins: []
-};
-```
-
-6. Run the following command to watch for changes and compile the Tailwind CSS code:
-
-```json
-"scripts": {
-	"dev:css": "tailwindcss -i ./static/src/input.css -o ./static/src/output.css --minify --watch"
-},
-```
-
-7. Load precessed `output.css` in `templates\_base.html`
-
-`templates\_base.html`
-
-```html
-{% load compress %} {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>{% block page_title %}Django + Tailwind CSS + HTMX{% endblock page_title %}</title>
-		{% compress css %}
-		<link rel="stylesheet" href="{% static 'src/output.css' %}" />
-		<!-- HTMX start -->
-		{% endcompress %}
-	</head>
-	<body>
-		{% block content %} {% endblock content %}
-	</body>
-</html>
-```
-
-
-### HTMX
-
-1. Download `https://unpkg.com/htmx.org@1.9.10/dist/htmx.js` and save to `static/src`
-2. Load `htmx.js` in `_base.html` also set header to use crf_token
-
-
-`templates\_base.html`
-
-```html
-{% load compress %} {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>{% block page_title %}Django + Tailwind CSS + HTMX{% endblock page_title %}</title>
-		{% compress css %}
-		<link rel="stylesheet" href="{% static 'src/output.css' %}" />
-		{% endcompress %}
-		<!-- HTMX start -->
-		{% compress js %}
-		<script type="text/javascript" src="{% static 'src/htmx.js' %}"></script>
-		{% endcompress %}
-		<!-- HTMX end-->
-	</head>
-	<body>
-		{% block content %} {% endblock content %}
-		<!-- HTMX start -->
-
-		<script>
-			document.body.addEventListener('htmx:configRequest', (event) => {
-				event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-			});
-		</script>
-		<!-- HTMX end-->
-	</body>
-</html>
-```
-
+- **stockview:** Contains Django app files, including models, views, templates, and static files.
+- **stockview\scripts\run_seed.py:** Script to seed the SQL database with stock market data from the provided JSON file. Command to run the script: `python manage.py runscript run_seed`.
