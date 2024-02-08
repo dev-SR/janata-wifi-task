@@ -1,3 +1,5 @@
+from django.forms import DateInput
+from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from typing import Any
@@ -12,6 +14,8 @@ import plotly.graph_objs as go
 class StockMarketDataListView(ListView):
     model = StockMarketData
     paginate_by = 7
+    # object_list order by created_at
+    queryset = StockMarketData.objects.all().order_by('-created_at')
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -52,6 +56,13 @@ class StockMarketDataListView(ListView):
                           width=900,  # Set a default width to avoid chart shrinking
                           height=500)  # Set a default height
 
+        # Check if dark mode is enabled
+        is_dark_mode = self.request.session.get("is_dark_mode", False)
+
+        # Apply dark theme if enabled
+        if is_dark_mode:
+            fig.update_layout(template="plotly_dark")  # Apply dark theme
+
         # Serialize figure to HTML and add t context
         context['chart_html'] = fig.to_html()
 
@@ -63,11 +74,27 @@ class StockMarketDataCreateView(CreateView):
     fields = ['date', 'trade_code', 'high', 'low', 'open', 'close', 'volume']
     success_url = reverse_lazy('index')
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['date'].widget = DateInput(attrs={'type': 'date'})
+        return form
+
+
+class StockMarketDataDetailView(DetailView):
+    model = StockMarketData
+    context_object_name = 'stock_data'  # Optionally specify the context object name
+
 
 class StockMarketDataUpdateView(UpdateView):
     model = StockMarketData
     fields = ['date', 'trade_code', 'high', 'low', 'open', 'close', 'volume']
     success_url = reverse_lazy('index')
+    template_name_suffix = '_update_form'
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['date'].widget = DateInput(attrs={'type': 'date'})
+        return form
 
 
 class StockMarketDataDeleteView(DeleteView):
