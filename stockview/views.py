@@ -1,3 +1,5 @@
+from typing import Any
+from django.http import HttpRequest, HttpResponse
 import plotly.graph_objs as go
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import DateInput
@@ -13,6 +15,12 @@ class StockMarketDataListView(ListView):
     model = StockMarketData
     paginate_by = 7
     queryset = StockMarketData.objects.all().order_by('-created_at')
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        # Initially, set 'is_dark_mode' in session to prevent 2nd request to set it
+        if "is_dark_mode" not in request.session:
+            request.session["is_dark_mode"] = False
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
