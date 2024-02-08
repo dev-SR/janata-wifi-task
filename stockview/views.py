@@ -1,13 +1,18 @@
+from typing import Any
+from .models import StockMarketData
+from django.views.generic import ListView
 from django.shortcuts import render
 import json
 from django.core.paginator import Paginator
 
 
-def home(request):
-    with open('./stockview/stock_market_data.json') as f:
-        data = json.load(f)
+class StockMarketDataListView(ListView):
+    model = StockMarketData
+    paginate_by = 7
 
-    paginator = Paginator(data, 10)  # Show 10 items per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request, 'stockview/home.html', {'page_obj': page_obj})
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        trade_codes = list(StockMarketData.objects.values_list('trade_code', flat=True).distinct())
+        context['trade_codes'] = trade_codes
+        return context

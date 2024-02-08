@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import home
+from .views import StockMarketDataListView
 
 urlpatterns = [
-    path('', home, name='index'),
-    # Add other URL patterns for additional views if needed
+    path('', StockMarketDataListView.as_view(), name='index'),
+
 ]
